@@ -31,13 +31,14 @@ st.markdown(
 )
 
 # ---------- LOAD DATA ----------
-@st.cache_data
+@st.cache_data(ttl=60)  # cache only for 60 seconds
 def load_data():
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
     creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
     client = gspread.authorize(creds)
     sheet = client.open("Pre-Post Flight Data").sheet1
     data = sheet.get_all_records()
+    
     df = pd.DataFrame(data)
 
     df['Takeoff_Time'] = pd.to_datetime(df['Takeoff_Time'], errors='coerce')
